@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-// ファイルが存在するか
 func TestIsExist(t *testing.T) {
 	// ファイルが存在する
 	if !(IsExist("sample\\testfile.txt")) {
@@ -18,7 +17,6 @@ func TestIsExist(t *testing.T) {
 	}
 }
 
-// 拡張子を返す
 func TestExt(t *testing.T) {
 	// 拡張子が存在する
 	if "txt" == Ext("sample\\testfile.txt") {
@@ -36,7 +34,6 @@ func TestExt(t *testing.T) {
 	}
 }
 
-// ディレクトリを返す
 func TestDir(t *testing.T) {
 	// ディレクトリが存在
 	if "sample" == Dir("sample\\testfile.txt") {
@@ -49,7 +46,6 @@ func TestDir(t *testing.T) {
 	}
 }
 
-// 絶対パスを返す
 func TestFullPath(t *testing.T) {
 	{
 		// ファイルが存在
@@ -71,5 +67,29 @@ func TestFullPath(t *testing.T) {
 		if err != nil {
 			t.Errorf("ファイル存在しない場合、エラーが返却される")
 		}
+	}
+}
+
+func TestFilename(t *testing.T) {
+	// ファイル指定
+	if filename := Filename("sample\\testfile.txt"); "testfile.txt" != filename {
+		t.Errorf("ファイル名が取得されない [%s]", filename)
+	}
+
+	// ディレクトリ指定
+	if filename := Filename("sample"); "sample" != filename {
+		t.Errorf("ディレクトリ名が取得されない [%s]", filename)
+	}
+}
+
+func TestTitle(t *testing.T) {
+	// ファイル指定
+	if title := Title("sample\\testfile.txt"); title != "testfile" {
+		t.Errorf("タイトルが取得されない [%s]", title)
+	}
+
+	// ディレクトリ指定
+	if title := Title("sample"); title != "" {
+		t.Errorf("ディレクトリ名指定で空にならない [%s]", title)
 	}
 }

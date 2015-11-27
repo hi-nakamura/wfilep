@@ -4,6 +4,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 )
 
 // ファイルが存在するか
@@ -33,6 +34,27 @@ func FullPath(p string) (string, error) {
 	return filepath.Abs(p)
 }
 
+// ファイル名を返す
+//  ex) dir\test.txt
+//  ->  test.txt
+func Filename(p string) string {
+	index := strings.LastIndex(p, "\\")
+	return p[index+1 : len(p)]
+}
+
+// タイトルを返す
+//  ex) dir\test.txt <br>
+//  ->  test
+func Title(p string) string {
+	f := Filename(p)
+	index := strings.LastIndex(f, ".")
+	if -1 == index {
+		return ""
+	}
+	t := f[0:index]
+	return t
+}
+
 /////////////////////////////////////////////////////
 // 以下、未実装
 /////////////////////////////////////////////////////
@@ -41,22 +63,6 @@ func FullPath(p string) (string, error) {
 func IsDir(p string) bool {
 	// TODO
 	return false
-}
-
-// ファイル名を返す
-//  ex) dir\test.txt
-//  ->  test.txt
-func Filename(p string) string {
-	// TODO
-	return ""
-}
-
-// タイトルを返す
-//  ex) dir\test.txt <br>
-//  ->  test
-func Title(p string) string {
-	// TODO
-	return ""
 }
 
 // 短いパス名を取得する
