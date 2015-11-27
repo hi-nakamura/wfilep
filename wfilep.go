@@ -1,6 +1,7 @@
 package wfilep
 
 import (
+	"bytes"
 	"os"
 	"path"
 	"path/filepath"
@@ -38,8 +39,8 @@ func FullPath(p string) (string, error) {
 //  ex) dir\test.txt
 //  ->  test.txt
 func Filename(p string) string {
-	index := strings.LastIndex(p, "\\")
-	return p[index+1 : len(p)]
+	i := strings.LastIndex(p, "\\")
+	return p[i+1 : len(p)]
 }
 
 // タイトルを返す
@@ -47,12 +48,23 @@ func Filename(p string) string {
 //  ->  test
 func Title(p string) string {
 	f := Filename(p)
-	index := strings.LastIndex(f, ".")
-	if -1 == index {
+	i := strings.LastIndex(f, ".")
+	if -1 == i {
 		return ""
 	}
-	t := f[0:index]
+	t := f[0:i]
 	return t
+}
+
+// パスの最後に区切り文字を追加する
+func AddBackSlash(p string) string {
+	var b bytes.Buffer
+	b.WriteString(p)
+	if p[len(p)-1:] != "\\" {
+		// stringの連結より高速
+		b.WriteString("\\")
+	}
+	return b.String()
 }
 
 /////////////////////////////////////////////////////
@@ -68,11 +80,5 @@ func IsDir(p string) bool {
 // 短いパス名を取得する
 func ShortName(p string) string {
 	// TODO (::GetShortPathName)
-	return ""
-}
-
-// パスの最後に区切り文字を追加する
-func SddBackSlash(p string) string {
-	// TODO 最後に「\\」を追加
 	return ""
 }

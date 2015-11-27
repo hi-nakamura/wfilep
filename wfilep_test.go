@@ -93,3 +93,15 @@ func TestTitle(t *testing.T) {
 		t.Errorf("ディレクトリ名指定で空にならない [%s]", title)
 	}
 }
+
+func TestAddBackSlash(t *testing.T) {
+	// バックスラッシュ必要
+	if dir := AddBackSlash("sample"); dir != "sample\\" {
+		t.Errorf("バックスラッシュ必要時の動作不正 [%s]", dir)
+	}
+
+	// バックスラッシュ不要
+	if dir := AddBackSlash("sample\\"); dir != "sample\\" {
+		t.Errorf("バックスラッシュ不要時の動作不正 [%s]", dir)
+	}
+}
