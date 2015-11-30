@@ -19,17 +19,17 @@ func TestIsExist(t *testing.T) {
 
 func TestExt(t *testing.T) {
 	// 拡張子が存在する
-	if "txt" == Ext("sample\\testfile.txt") {
+	if "txt" != Extension("sample\\testfile.txt") {
 		t.Errorf("拡張子が一致しない")
 	}
 
 	// 拡張子が存在しない
-	if "" != Ext("sample\\testfile") {
+	if "" != Extension("sample\\testfile") {
 		t.Errorf("拡張子が空以外となる")
 	}
 
 	// ファイルが存在しない
-	if "" == Ext("sample\\testfile.txt2") {
+	if "" == Extension("sample\\testfile.txt2") {
 		t.Errorf("ファイル存在しない場合の動作が不正")
 	}
 }
@@ -103,5 +103,86 @@ func TestAddBackSlash(t *testing.T) {
 	// バックスラッシュ不要
 	if dir := AddBackSlash("sample\\"); dir != "sample\\" {
 		t.Errorf("バックスラッシュ不要時の動作不正 [%s]", dir)
+	}
+}
+
+func TestShortName(t *testing.T) {
+	{
+		// 存在しないパス
+		p, err := ShortName("sample\\testfile2.txt")
+		if p != "" {
+			t.Errorf("存在しないパスで名前が取得される [%s]", p)
+		}
+		if err == nil {
+			t.Errorf("存在しないパスでエラーが発生しない")
+		}
+	}
+
+	{
+		// 存在するパス(短いパス)
+		p, err := ShortName("sample\\testfile.txt")
+		if p != "sample\\testfile.txt" {
+			t.Errorf("短いパスで正しく取得されない [%s]", p)
+		}
+		if err != nil {
+			t.Errorf("短いパスでエラーが発生 [%s]", err)
+		}
+	}
+
+	{
+		// 存在するパス(長いパス)
+		p, err := ShortName("sample\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.txt")
+		if p != "sample\\AAAAAA~1.TXT" {
+			t.Errorf("長いパスで正しく取得されない [%s]", p)
+		}
+		if err != nil {
+			t.Errorf("長いパスでエラーが発生 [%s]", err)
+		}
+	}
+}
+
+func TestIsDir(t *testing.T) {
+	{
+		// 存在しないディレクトリ
+		b, err := IsDir("sample2")
+		if b {
+			t.Errorf("存在しないディレクトリの結果が不正")
+		}
+		if err == nil {
+			t.Errorf("存在しないディレクトリでエラー発生しない")
+		}
+	}
+
+	{
+		// 存在しないファイルパス
+		b, err := IsDir("sample\\testfile2.txt")
+		if b {
+			t.Errorf("存在しないファイルパスの結果が不正")
+		}
+		if err == nil {
+			t.Errorf("存在しないファイルパスでエラー発生しない")
+		}
+	}
+
+	{
+		// 存在するディレクトリ
+		b, err := IsDir("sample")
+		if !b {
+			t.Errorf("存在するディレクトリの結果が不正")
+		}
+		if err != nil {
+			t.Errorf("存在するディレクトリでエラー発生 [%s]", err)
+		}
+	}
+
+	{
+		// 存在するファイルパス
+		b, err := IsDir("sample\\testfile.txt")
+		if b {
+			t.Errorf("存在するファイルパスの結果が不正")
+		}
+		if err != nil {
+			t.Errorf("存在するファイルパスでエラー発生 [%s]", err)
+		}
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"syscall"
 )
 
 // ファイルが存在するか
@@ -17,8 +18,13 @@ func IsExist(p string) bool {
 // 拡張子を返す
 //  ex) dir\test.txt
 //  ->  txt
-func Ext(p string) string {
-	return path.Ext(p)
+func Extension(p string) string {
+	e := path.Ext(p)
+	// ピリオド以降取得(.txt → txt)
+	if i := strings.Index(e, "."); i > -1 {
+		e = e[i+1:]
+	}
+	return e
 }
 
 // ディレクトリを返す
@@ -67,18 +73,29 @@ func AddBackSlash(p string) string {
 	return b.String()
 }
 
-/////////////////////////////////////////////////////
-// 以下、未実装
-/////////////////////////////////////////////////////
-
-// ディレクトリかどうか
-func IsDir(p string) bool {
-	// TODO
-	return false
+// 短いパス名を取得する
+func ShortName(path string) (string, error) {
+	p := syscall.StringToUTF16(path)
+	b := p
+	n, err := syscall.GetShortPathName(&p[0], &b[0], uint32(len(b)))
+	if err != nil {
+		return "", err
+	}
+	if n > uint32(len(b)) {
+		b = make([]uint16, n)
+		n, err = syscall.GetShortPathName(&p[0], &b[0], uint32(len(b)))
+		if err != nil {
+			return "", err
+		}
+	}
+	return syscall.UTF16ToString(b), nil
 }
 
-// 短いパス名を取得する
-func ShortName(p string) string {
-	// TODO (::GetShortPathName)
-	return ""
+// ディレクトリかどうか
+func IsDir(p string) (bool, error) {
+	f, err := os.Stat(p)
+	if err != nil {
+		return false, err
+	}
+	return f.IsDir(), nil
 }
